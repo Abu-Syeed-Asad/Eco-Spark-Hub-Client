@@ -24,6 +24,7 @@ interface LoginFormProps {
 const LoginForm = ({ redirectUrl }: LoginFormProps) => {
   const [serverError, setServerError] = useState<string | null>(null)
   const [showPassword, setShowPassword] = useState(false)
+  console.log(redirectUrl,"login form ")
    const { mutateAsync} = useMutation({
      mutationFn: (payload: LoginType) => loginUser(payload,redirectUrl as string),
  })

@@ -1,13 +1,22 @@
 import LoginForm from '@/components/module/auth/LoginForm';
 import React from 'react';
 
-interface LoginParamas {
-  searchParams: Promise<{redirect?:string} >;
+interface LoginParams {
+  searchParams: Promise<{
+    redirect?: string;
+  }>;
 }
 
-const LoginPage = async({searchParams}:LoginParamas) => {
+const LoginPage = async ({
+  searchParams,
+}: LoginParams) => {
+
   const params = await searchParams;
+
   const redirectUrl = params.redirect;
+
+  console.log(redirectUrl, "login page");
+
   return (
     <div>
       <LoginForm redirectUrl={redirectUrl} />

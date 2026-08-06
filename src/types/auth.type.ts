@@ -1,7 +1,7 @@
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
-  toke: string;
+  token: string;
   redirectUrl: boolean;
   user: IUser;
 }
