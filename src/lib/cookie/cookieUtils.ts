@@ -1,13 +1,14 @@
-import { cookies } from "next/headers"
-import { number } from "zod";
 
-const setCookie = async (token: string, key: string, maxAge?: number) => {
+import { cookies } from "next/headers"
+
+
+const setCookie = async ( key: string,token:string, maxAge=60*60*24) => {
   const cookieStore = await cookies();
   cookieStore.set(key, token, {
     httpOnly: true,
     sameSite: "lax",
     path: "/",
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     maxAge: maxAge,
   })
 };

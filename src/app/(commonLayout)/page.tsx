@@ -1,6 +1,7 @@
-import React from 'react';
 
-const HomePage = () => {
+
+
+const HomePage = async() => {
   return (
     <div>
       This is Home Page

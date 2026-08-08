@@ -14,9 +14,6 @@ const LoginPage = async ({
   const params = await searchParams;
 
   const redirectUrl = params.redirect;
-
-  console.log(redirectUrl, "login page");
-
   return (
     <div>
       <LoginForm redirectUrl={redirectUrl} />

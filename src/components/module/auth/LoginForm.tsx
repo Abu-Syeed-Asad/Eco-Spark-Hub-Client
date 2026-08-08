@@ -9,6 +9,7 @@ import AppField from '../forms/AppField';
 import { Button } from '@/components/ui/button';
 import { Eye, EyeOff } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import AppSubminButton from '../forms/AppSubminButton';
 import ContinueWithGoogle from '../forms/ContinueWithGoogle';
@@ -19,15 +20,17 @@ import { loginUser } from '@/app/auth/login/_action';
 
 
 interface LoginFormProps {
-  redirectUrl?: string ;
+  redirectUrl?: string;
 }
 const LoginForm = ({ redirectUrl }: LoginFormProps) => {
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [showPassword, setShowPassword] = useState(false)
-  console.log(redirectUrl,"login form ")
-   const { mutateAsync} = useMutation({
-     mutationFn: (payload: LoginType) => loginUser(payload,redirectUrl as string),
- })
+  const router = useRouter();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { mutateAsync } = useMutation({
+    mutationFn: (payload: LoginType) => loginUser(payload, redirectUrl),
+  });
+
   const loginform = useForm({
     defaultValues: {
       email: "",
@@ -36,13 +39,15 @@ const LoginForm = ({ redirectUrl }: LoginFormProps) => {
     onSubmit: async ({ value }) => {
       setServerError(null);
       try {
-       await mutateAsync(value) as any;
-      } catch (error:any) {
-        setServerError(`log in Failed: ${error.message}`)
+        const redirectPath = await mutateAsync(value);
+        if (redirectPath) {
+          router.push(redirectPath as string);
+        }
+      } catch (error: any) {
+        setServerError(`Login failed: ${error?.message ?? String(error)}`);
       }
-     
-    }
-  })
+    },
+  });
   
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8 bg-slate-50">

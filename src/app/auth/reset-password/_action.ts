@@ -28,7 +28,7 @@ export const resetPassword = async (payload: IResetPasswordPayload) => {
     "/auth/reset-password",
     normalizedPayload,
   );
-   console.log(response)
+
   if (!response.success) {
     throw new Error(response.message || "Unable to reset password.");
   }
