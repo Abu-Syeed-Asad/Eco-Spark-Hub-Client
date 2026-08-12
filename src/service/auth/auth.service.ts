@@ -36,10 +36,9 @@ export const getNewTokenWithRefreshToken = async (refreshToken: string) => {
 export async function getUserInfo() {
   try {
     const cookieStore = await cookies();
-
+   
     const accessToken = cookieStore.get("access_token")?.value;
     const sessionToken = cookieStore.get("session_token")?.value;
-
     if (!accessToken || !sessionToken) {
       return null;
     }
@@ -55,7 +54,7 @@ export async function getUserInfo() {
         Cookie: cookieParts.join("; "),
       },
     });
-
+    
     if (!res.ok) {
       console.error("Failed to fetch user info:", res.status, res.statusText);
 

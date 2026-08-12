@@ -8,7 +8,6 @@ import {
   userRole,
 } from "./lib/auth/authUtils";
 import {
- 
   getNewTokenWithRefreshToken,
   getUserInfo,
 } from "./service/auth/auth.service";
@@ -27,8 +26,6 @@ const refreshTokenMiddleWare = async (refreshToken: string) => {
 };
 
 export const proxy = async (request: NextRequest) => {
-
-
   try {
     const pathName = request.nextUrl.pathname;
     const rawCookieHeader = request.headers.get("cookie") ?? "";
@@ -52,14 +49,13 @@ export const proxy = async (request: NextRequest) => {
     const isValidAccesstoken =
       accessToken &&
       jwtUtils.veryfyToken(accessToken, accessTokenSecret as string).success;
-  
-    
+
     let User_Role: userRole | null = null;
     if (decodedAccessToken) {
       User_Role = decodedAccessToken.role as userRole;
     }
-
-    const routeOwner = getRouteOwner(pathName);
+const routeOwner = getRouteOwner(pathName);
+    
 
     const isAuth = isAuthRoute(pathName);
 
