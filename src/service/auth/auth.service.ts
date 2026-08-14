@@ -1,3 +1,5 @@
+
+import { http } from "@/lib/axios/axios_instance";
 import { cookieUtils } from "@/lib/cookie/cookieUtils";
 import { cookies } from "next/headers";
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -8,22 +10,22 @@ export const getNewTokenWithRefreshToken = async (refreshToken: string) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `refreshToken=${refreshToken}`,
+        Cookie: `refresh_token=${refreshToken}`,
       },
     });
     if (!res.ok) {
       return false;
     }
     const { data } = await res.json();
-    const { accessToken, refreshToken: newRefreshTokne, token } = data;
+    const { accessToken, refreshToken: newRefreshToken, token } = data;
     if (accessToken) {
-      await cookieUtils.setCookie(accessToken, "access_token");
+      await cookieUtils.setCookie("access_token", accessToken);
     }
-    if (newRefreshTokne) {
-      await cookieUtils.setCookie(newRefreshTokne, "refresh_token");
+    if (newRefreshToken) {
+      await cookieUtils.setCookie("refresh_token", newRefreshToken);
     }
     if (token) {
-      await cookieUtils.setCookie(token, "session_token", 24 * 60 * 60);
+      await cookieUtils.setCookie("session_token", token, 24 * 60 * 60);
     }
     return true;
   } catch (error) {
@@ -68,4 +70,18 @@ export async function getUserInfo() {
     console.error("Error fetching user info:", error);
     return null;
   }
+}
+
+export const logout = async() => {
+   try {
+     const res = await http.httpPost("/auht/log-out")
+     if (!res) {
+       throw new Error("Logout failed ")
+     }
+     cookieUtils.deleteCookie("access_token");
+     cookieUtils.deleteCookie("refresh_token");
+     cookieUtils.deleteCookie("session_token");
+   } catch (error) {
+    console.log(error)
+   }
 }

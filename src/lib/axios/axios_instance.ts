@@ -1,18 +1,65 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios, { AxiosError } from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const getCookieHeaderFromClient = () => {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  const accessToken = document.cookie
+    .split("; ")
+    .find((cookie) => cookie.startsWith("access_token="))
+    ?.split("=")
+    .slice(1)
+    .join("=");
+
+  const sessionToken = document.cookie
+    .split("; ")
+    .find((cookie) => cookie.startsWith("session_token="))
+    ?.split("=")
+    .slice(1)
+    .join("=");
+
+  return [
+    accessToken ? `access_token=${decodeURIComponent(accessToken)}` : null,
+    sessionToken ? `session_token=${decodeURIComponent(sessionToken)}` : null,
+  ]
+    .filter(Boolean)
+    .join("; ");
+};
+
+const getCookieHeaderFromServer = async () => {
+  if (typeof window !== "undefined") {
+    return getCookieHeaderFromClient();
+  }
+
+  const { cookies } = await import("next/headers");
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("access_token")?.value;
+  const sessionToken = cookieStore.get("session_token")?.value;
+
+  return [
+    accessToken ? `access_token=${accessToken}` : null,
+    sessionToken ? `session_token=${sessionToken}` : null,
+  ]
+    .filter(Boolean)
+    .join("; ");
+};
 
 export const axiosInstance = async () => {
-  const instance = axios.create({
-    baseURL: BASE_URL,
+  const cookieHeader =
+    typeof window !== "undefined"
+      ? getCookieHeaderFromClient()
+      : await getCookieHeaderFromServer();
+
+  return axios.create({
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
     timeout: 30000,
     headers: {
       "Content-Type": "application/json",
-      //  Cookie:cookieHeader
+      ...(cookieHeader ? { Cookie: cookieHeader } : {}),
     },
   });
-
-  return instance;
 };
 
 export interface ApiResponse<TData> {
@@ -58,7 +105,7 @@ const httpget = async <TData>(
 
 const httpPost = async <TData>(
   endPoint: string,
-  data: unknown,
+  data?: unknown,
   option?: ApiRequestOption,
 ): Promise<ApiResponse<TData>> => {
   const instance = await axiosInstance();

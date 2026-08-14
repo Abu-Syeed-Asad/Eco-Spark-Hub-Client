@@ -1,6 +1,6 @@
 import React from 'react';
 import DashboardItems from './DashboardItems';
-import { Separator } from '@/components/ui/separator';
+import UserProfile from './UserProfile';
 import { IUser } from '@/types/auth.type';
 import { getNavItemsByRole } from '@/lib/dashboard/navItems';
 import { userRole } from '@/lib/auth/authUtils';
@@ -17,18 +17,8 @@ const DashboardSidebarContainer: React.FC<{ userInfo: IUser }> = ({
         <DashboardItems items={userNavItems} />
       </div>
 
-      <Separator />
-     <div className="p-4">
-        <h1 className="font-medium">{userInfo.name}</h1>
-        <p className="text-sm text-muted-foreground">
-          {userInfo.role}
-        </p>
-
-        <button className="mt-2">
-          Log Out
-        </button>
-      </div>
-
+      {/* User Profile Section - Sticky at bottom */}
+      <UserProfile userInfo={userInfo} />
     </div>
   );
 };

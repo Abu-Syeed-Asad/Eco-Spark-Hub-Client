@@ -30,7 +30,7 @@ const setTokenInCookie = async (name: string, toke: string, fallbackMaxAgeInSeco
   if (name !== "better-auth.session_token") {
     maxAgeInSecond = getTokenSecondsRemaining(toke);
   }
-  await cookieUtils.setCookie(toke, name, maxAgeInSecond || fallbackMaxAgeInSecond)
+  await cookieUtils.setCookie(name, toke, maxAgeInSecond || fallbackMaxAgeInSecond)
 };
 
 const isTokenExpired = async (token: string): Promise<boolean> => {

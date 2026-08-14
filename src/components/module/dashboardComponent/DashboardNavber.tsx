@@ -6,7 +6,6 @@ import {
   Search,
   User,
   Settings,
-  LogOut,
   CheckCircle,
   UserPlus,
   MessageSquare,
@@ -22,8 +21,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { IUser } from "@/types/auth.type";
+import LogoutButton from "./LogoutButton";
 
-const DashboardNavbar = () => {
+
+const DashboardNavbar = ({ userInfo }: { userInfo: IUser }) => {
+  const firstTwoLetterInName = (userInfo.name).slice(0,2).toLocaleUpperCase()
+ 
   return (
     <header className="sticky top-0 z-50 h-16 border-b bg-background px-4 md:px-6">
       <div className="flex h-full items-center justify-between gap-4">
@@ -119,17 +123,22 @@ const DashboardNavbar = () => {
           <DropdownMenu>
             <DropdownMenuTrigger className="rounded-full outline-none">
               <Avatar className="h-9 w-9 cursor-pointer">
-                <AvatarImage src="/avatar.png" />
-                <AvatarFallback>AS</AvatarFallback>
+                
+                <AvatarFallback>
+                  {
+                    userInfo.image ? (<AvatarImage src={userInfo.image} />) : (<h1>{ firstTwoLetterInName}</h1>)
+                  }
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56">
               <div className="px-3 py-2">
-                <p className="font-medium">Abu Syeed Asad</p>
+                <p className="font-medium">{ userInfo.name}</p>
                 <p className="text-sm text-muted-foreground">
-                  admin@example.com
+                  {userInfo.email}
                 </p>
+                <p className="text-sm text-muted-foreground"> {userInfo.role}</p>
               </div>
 
               <DropdownMenuSeparator />
@@ -146,10 +155,9 @@ const DashboardNavbar = () => {
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem className="text-red-500">
-                <LogOut className="mr-2 h-4 w-4" />
-                Logout
-              </DropdownMenuItem>
+           
+               <LogoutButton/>
+              
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

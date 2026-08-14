@@ -1,13 +1,12 @@
+import ComponentRenderBaseRole from "@/components/module/dashboardComponent/ComponentRenderBaseRole";
+import { userRole } from "@/lib/auth/authUtils";
+import { getUserInfo } from "@/service/auth/auth.service";
 
-const DashboardCommonPage = () => {
+const DashboardCommonPage = async() => {
+  const userinfo =await getUserInfo();
   return (
     <div>
-
-    
-      <div>
-        DashboardCommon page
-      </div>
-
+      <ComponentRenderBaseRole role={userinfo.role as userRole} />
     </div>
   );
 };
