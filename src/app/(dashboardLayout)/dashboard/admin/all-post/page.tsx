@@ -1,37 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import DraftedPostTable from '@/components/module/AllPost/DraftedPostTable';
+import DraftedPostTable from '@/components/module/AllPost/AdminDashBoardAllPost';
 
 import { getDashboardAllpost } from '@/service/dashboard/allPost';
 import { useQuery } from '@tanstack/react-query';
-import React from 'react';
+import type { AdminDashboardResponse } from '@/types/dashboard.type';
 
 const AllPost = () => {
-  const { data, error, isLoading } = useQuery<{
-    adminDashboardPost?: {
-      DraftedPost?: Array<Record<string, unknown>>;
-    };
-  }>({
-    queryKey: ["dashboard-draftedpost"],
-    queryFn: async () => getDashboardAllpost() as Promise<{
-      adminDashboardPost?: {
-        DraftedPost?: Array<Record<string, unknown>>;
-      };
-    }>,
+  const { data, error, isLoading } = useQuery<AdminDashboardResponse>({
+    queryKey: ["dashboard-all-posts"],
+    queryFn: () => getDashboardAllpost<AdminDashboardResponse>(),
   });
 
+  if (isLoading) {
+    return <p>Loading posts...</p>;
+  }
+
+  if (error) {
+    return <p className="text-destructive">Unable to load posts.</p>;
+  }
+
   return (
-    <div>
-      {isLoading ? (
-        <>
-          <p>loading....</p>
-        </>
-      ) : (
-        <>
-          <DraftedPostTable posts={((data?.adminDashboardPost?.DraftedPost ?? []) as any)} />
-        </>
-      )}
+    <div className="p-4 sm:p-6">
+      <DraftedPostTable posts={data?.adminDashboardPost.allposts ?? []} />
     </div>
   );
 };

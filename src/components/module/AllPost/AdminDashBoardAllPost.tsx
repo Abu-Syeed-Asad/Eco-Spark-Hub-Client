@@ -14,6 +14,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,25 +22,53 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
+import type { DashboardPost, PostStatus, PostType } from "@/types/dashboard.type";
 
-export interface Category {
-  id: string;
-  title: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface DraftedPost {
-  id: string;
-  title: string;
-  category: Category;
-  status?: string;
-  createdAt?: string;
-}
+export type DraftedPost = DashboardPost;
 
 interface DraftedPostTableProps {
   posts: DraftedPost[];
 }
+
+const formatEnumLabel = (value: string) =>
+  value.charAt(0) + value.slice(1).toLowerCase();
+
+const getPostStatus = (status?: string): PostStatus => {
+  switch (status?.toUpperCase()) {
+    case "APPROVED":
+      return "APPROVED";
+    case "REJECTED":
+      return "REJECTED";
+    case "DELETED":
+      return "DELETED";
+    default:
+      return "DRAFT";
+  }
+};
+
+const getPostType = (postType?: string): PostType => {
+  switch (postType?.toUpperCase()) {
+    case "FREE":
+      return "FREE";
+    case "PAID":
+      return "PAID";
+    default:
+      return "UNPAID";
+  }
+};
+
+const statusBadgeClasses: Record<PostStatus, string> = {
+  DRAFT: "border-amber-200 bg-amber-50 text-amber-700",
+  APPROVED: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  REJECTED: "border-red-200 bg-red-50 text-red-700",
+  DELETED: "border-red-200 bg-red-50 text-red-700",
+};
+
+const typeBadgeClasses: Record<PostType, string> = {
+  FREE: "border-sky-200 bg-sky-50 text-sky-700",
+  PAID: "border-violet-200 bg-violet-50 text-violet-700",
+  UNPAID: "border-slate-200 bg-slate-100 text-slate-700",
+};
 
 const tableFeaturesConfig = tableFeatures({
   rowSortingFeature,
@@ -48,14 +77,13 @@ const tableFeaturesConfig = tableFeatures({
   paginatedRowModel: createPaginatedRowModel(),
 });
 
-const DraftedPostTable = ({ posts }: DraftedPostTableProps) => {
+const AdminDashBoardAllPost = ({ posts }: DraftedPostTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
-    pageSize: 5,
+    pageSize: 10,
   });
-
   const categoryOptions = useMemo(
     () =>
       Array.from(
@@ -98,11 +126,29 @@ const DraftedPostTable = ({ posts }: DraftedPostTableProps) => {
         accessorKey: "status",
         header: "Status",
         enableSorting: true,
-        cell: ({ row }: any) => (
-          <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
-            {row.original.status || "Draft"}
-          </span>
-        ),
+        cell: ({ row }: any) => {
+          const status = getPostStatus(row.original.status);
+
+          return (
+            <Badge variant="outline" className={statusBadgeClasses[status]}>
+              {formatEnumLabel(status)}
+            </Badge>
+          );
+        },
+      },
+      {
+        accessorKey: "postType",
+        header: "Type",
+        enableSorting: true,
+        cell: ({ row }: any) => {
+          const postType = getPostType(row.original.postType);
+
+          return (
+            <Badge variant="outline" className={typeBadgeClasses[postType]}>
+              {formatEnumLabel(postType)}
+            </Badge>
+          );
+        },
       },
       {
         accessorKey: "createdAt",
@@ -187,8 +233,8 @@ const DraftedPostTable = ({ posts }: DraftedPostTableProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
           <label htmlFor="category-select" className="text-sm font-medium text-slate-700">
             Category
           </label>
@@ -215,8 +261,8 @@ const DraftedPostTable = ({ posts }: DraftedPostTableProps) => {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full border-collapse">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
+        <table className="min-w-[760px] w-full border-collapse">
           <thead className="bg-slate-50">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
@@ -305,4 +351,4 @@ const DraftedPostTable = ({ posts }: DraftedPostTableProps) => {
   );
 };
 
-export default DraftedPostTable;
+export default AdminDashBoardAllPost;

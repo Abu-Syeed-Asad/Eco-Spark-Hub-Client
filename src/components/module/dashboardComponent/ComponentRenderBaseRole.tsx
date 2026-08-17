@@ -1,8 +1,10 @@
-import HomePage from '@/app/(commonLayout)/page';
-import React from 'react';
-import AdminDasboardContent from './AdminDasboardContent';
-import UserDashBoardContent from './UserDashBoardContent';
-import { userRole } from '@/lib/auth/authUtils';
+"use client";
+
+import HomePage from "@/app/(commonLayout)/page";
+import { userRole } from "@/lib/auth/authUtils";
+
+import AdminDasboardContent from "./AdminDasboardContent";
+import UserDashBoardContent from "./UserDashBoardContent";
 
 const ComponentRenderBaseRole = ({ role }: { role: userRole }) => {
   switch (role) {

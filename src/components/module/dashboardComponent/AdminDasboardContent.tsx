@@ -1,36 +1,26 @@
-"use client"
+"use client";
+
 import { useQuery } from "@tanstack/react-query";
-import AdminDashboardStateCard from "./AdminDashboardStateCard";
+
 import { getDashboardAllpost } from "@/service/dashboard/allPost";
-export interface AdminDashboardPost {
-  ApprovedPost: number;
-  DraftedPost: unknown[]; // Replace with Post[] if you have a Post type
-  allposts: unknown[];    // Replace with Post[] if you have a Post type
-  countDraftedPost: number;
-  freePost: number;
-  paidPost: number;
-  totalPost: number;
-}
 
-export interface DashboardResponse {
-  adminDashboardPost: AdminDashboardPost;
-}
+import DashboardCharts, {
+  DashboardStatsCards,
+  type AdminDashboardResponse,
+} from "./DashboardCharts";
 
-const AdminDasboardContent =  () => {
-  const {data,error,isLoading } = useQuery({
-    queryKey: ["dashboard-data"],
-    queryFn:async()=>getDashboardAllpost()
-  })
- 
+const AdminDasboardContent = () => {
+  const { data } = useQuery<AdminDashboardResponse>({
+    queryKey: ["dasboard-data"],
+    queryFn: () => getDashboardAllpost<AdminDashboardResponse>(),
+  });
+
+  console.log(data)
+
   return (
-    <div>
-      {
-        isLoading ? (<> loading ...</>) : (<>
-        <AdminDashboardStateCard  />
-        </>)
-
-      }
-      
+    <div className="space-y-6 p-4 sm:p-6">
+      <DashboardStatsCards data={data} role="admin" />
+      <DashboardCharts data={data} role="admin" />
     </div>
   );
 };

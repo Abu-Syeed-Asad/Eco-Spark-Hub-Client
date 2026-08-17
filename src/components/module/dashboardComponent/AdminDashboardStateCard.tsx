@@ -1,13 +1,13 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { DashboardResponse } from "./AdminDasboardContent";
+import type { AdminDashboardResponse } from "./DashboardCharts";
 
 const AdminDashboardStateCard = () => {
   const queryClient = useQueryClient();
 
-  const dashboardData = queryClient.getQueryData<DashboardResponse>([
-    "dashboard-data",
+  const dashboardData = queryClient.getQueryData<AdminDashboardResponse>([
+    "dasboard-data",
   ]);
 
   const dashboard = dashboardData?.adminDashboardPost;

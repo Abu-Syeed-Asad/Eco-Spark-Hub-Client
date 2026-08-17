@@ -1,32 +1,24 @@
-import React from 'react';
-import StatsCard from './StateCard';
-import DashboardPichart from './DashboardPichart';
-import DashboardBarChart from './DashboardBarchart';
-const chartData = [
-  { name: "Sleep", value: 8 },
-  { name: "Study", value: 6 },
-  { name: "Entertainment", value: 4 },
-  { name: "Exercise", value: 2 },
-  { name: "Other", value: 4 },
-];
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+
+import { getDashboardAllpost } from "@/service/dashboard/allPost";
+
+import DashboardCharts, {
+  DashboardStatsCards,
+  type UserDashboardResponse,
+} from "./DashboardCharts";
+
 const UserDashBoardContent = () => {
+  const { data } = useQuery<UserDashboardResponse>({
+    queryKey: ["dasboard-data"],
+    queryFn: () => getDashboardAllpost<UserDashboardResponse>(),
+  });
+
   return (
-    <div >
-      <StatsCard />
-      <div className='p-6 '>
-        <h2 className='text-xl font-semibold mb-2 text-center'>
-          Dashboard Pie chart
-        </h2>
-        <DashboardPichart data={chartData} />
-        
-      
-      </div>
-      <div className='p-6'>
-          <h2 className='text-xl font-semibold mb-2 text-center'>
-          Dashboard Bar chart
-        </h2>
-           <DashboardBarChart data={chartData} />
-        </div>
+    <div className="space-y-6 p-4 sm:p-6">
+      <DashboardStatsCards data={data} role="user" />
+      <DashboardCharts data={data} role="user" />
     </div>
   );
 };
