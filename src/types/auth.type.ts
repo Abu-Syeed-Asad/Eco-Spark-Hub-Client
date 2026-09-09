@@ -19,4 +19,5 @@ export interface IUser {
   needPasswordChange: boolean;
   isDeleted: boolean;
   deletedAt: string | null;
+  totalAmount: number;
 }

@@ -2,9 +2,9 @@
 
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { type ActionType, type UserData } from "./tanstackTableData";
+import { type ActionType } from "./tanstackTableData";
 import {
   columnFilteringFeature,
   createFilteredRowModel,
@@ -16,7 +16,6 @@ import {
   rowSortingFeature,
   tableFeatures,
   useTable,
-  type ColumnDef,
   type PaginationState,
   type SortingState,
 } from "@tanstack/react-table";
@@ -31,22 +30,22 @@ const tableFeaturesConfig = tableFeatures({
   filteredRowModel: createFilteredRowModel(),
 });
 
-const BasicTanstackTable = ({
+const BasicTanstackTable = <TData extends object>({
   data,
   columns,
   isLoading = false,
   emptyMessage = "No records found.",
+  showRoleFilter = true,
 }: {
-  data: UserData[];
-  columns: ColumnDef<any, UserData, unknown>[];
+  data: TData[];
+  columns: any[];
   isLoading?: boolean;
   emptyMessage?: string;
+  showRoleFilter?: boolean;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
 
   const users = data;
 
@@ -101,16 +100,16 @@ const BasicTanstackTable = ({
 
   const uniqueRoles = useMemo(
     () =>
-      Array.from(new Set(users.map((user) => user.role))).sort((a, b) =>
-        a.localeCompare(b)
+      Array.from(new Set(users.map((user) => (user as any).role))).sort((a, b) =>
+        String(a).localeCompare(String(b))
       ),
     [users]
   );
 
   const uniqueStatuses = useMemo(
     () =>
-      Array.from(new Set(users.map((user) => user.status))).sort((a, b) =>
-        a.localeCompare(b)
+      Array.from(new Set(users.map((user) => (user as any).status))).sort((a, b) =>
+        String(a).localeCompare(String(b))
       ),
     [users]
   );
@@ -119,11 +118,11 @@ const BasicTanstackTable = ({
     let result = users;
 
     if (selectedRole) {
-      result = result.filter((user) => user.role === selectedRole);
+      result = result.filter((user) => (user as any).role === selectedRole);
     }
 
     if (selectedStatus) {
-      result = result.filter((user) => user.status === selectedStatus);
+      result = result.filter((user) => (user as any).status === selectedStatus);
     }
 
     if (globalFilter) {
@@ -151,24 +150,11 @@ const BasicTanstackTable = ({
     return filteredUsers.slice(start, start + pagination.pageSize);
   }, [filteredUsers, safePageIndex, pagination.pageSize]);
 
-  const handleAction = (action: ActionType, user: UserData) => {
-    if (action === "view") {
-      setSelectedUser(user);
-      console.log("View user:", user);
-      return;
-    }
-
-    if (action === "edit") {
-      setSelectedUser(user);
-      console.log("Edit user:", user);
-      return;
-    }
-
-    setSelectedUser((current) => (current?.id === user.id ? null : current));
-    console.log("Delete user:", user);
+  const handleAction = (action: ActionType, user: any) => {
+    console.log(`${action} user:`, user);
   };
 
-  const table = useTable({
+  const table = useTable<any, TData, any>({
     data: paginatedUsers,
     columns,
     manualPagination: true,
@@ -316,48 +302,50 @@ const BasicTanstackTable = ({
 
               <div className="flex w-full flex-col gap-4 md:max-w-xl">
                 <div className="flex w-full flex-col gap-4 md:flex-row md:items-end">
-                  <div className="w-full md:w-1/2">
-                    <label
-                      htmlFor="role-filter"
-                      className="mb-2 block text-sm font-medium text-gray-700"
-                    >
-                      Filter by role
-                    </label>
+                  {showRoleFilter ? (
+                    <div className="w-full md:w-1/2">
+                      <label
+                        htmlFor="role-filter"
+                        className="mb-2 block text-sm font-medium text-gray-700"
+                      >
+                        Filter by role
+                      </label>
 
-                    <select
-                      id="role-filter"
-                      value={selectedRole}
-                      onChange={(event) => {
-                        const value = event.target.value;
-                        const params = new URLSearchParams(searchParams.toString());
+                      <select
+                        id="role-filter"
+                        value={selectedRole}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          const params = new URLSearchParams(searchParams.toString());
 
-                        if (value) {
-                          params.set("role", value);
-                        } else {
-                          params.delete("role");
-                        }
+                          if (value) {
+                            params.set("role", value);
+                          } else {
+                            params.delete("role");
+                          }
 
-                        params.delete("page");
+                          params.delete("page");
 
-                        const queryString = params.toString();
+                          const queryString = params.toString();
 
-                        router.push(queryString ? `${pathname}?${queryString}` : pathname, {
-                          scroll: false,
-                        });
-                      }}
-                      className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
-                    >
-                      <option value="">All roles</option>
+                          router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+                            scroll: false,
+                          });
+                        }}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      >
+                        <option value="">All roles</option>
 
-                      {uniqueRoles.map((role) => (
-                        <option key={role} value={role}>
-                          {role}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                        {uniqueRoles.map((role) => (
+                          <option key={role} value={role}>
+                            {role}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : null}
 
-                  <div className="w-full md:w-1/2">
+                  <div className={showRoleFilter ? "w-full md:w-1/2" : "w-full"}>
                     <label
                       htmlFor="status-filter"
                       className="mb-2 block text-sm font-medium text-gray-700"

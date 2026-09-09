@@ -123,12 +123,10 @@ const DashboardNavbar = ({ userInfo }: { userInfo: IUser }) => {
           <DropdownMenu>
             <DropdownMenuTrigger className="rounded-full outline-none">
               <Avatar className="h-9 w-9 cursor-pointer">
-                
-                <AvatarFallback>
-                  {
-                    userInfo.image ? (<AvatarImage src={userInfo.image} />) : (<h1>{ firstTwoLetterInName}</h1>)
-                  }
-                </AvatarFallback>
+                {userInfo.image ? (
+                  <AvatarImage src={userInfo.image} alt={userInfo.name} />
+                ) : null}
+                <AvatarFallback>{firstTwoLetterInName}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
 

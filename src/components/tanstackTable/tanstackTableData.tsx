@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export type UserData = {
   id: string;
@@ -67,7 +68,7 @@ export const columns: ColumnDef<any, UserData, unknown>[] = [
     accessorKey: "image",
     header: "Image",
     cell: ({ row }) => {
-      const name = row.original.name || "U";
+      const name = row.original.name || "User";
       const initials = name
         .split(" ")
         .map((part) => part[0])
@@ -77,9 +78,14 @@ export const columns: ColumnDef<any, UserData, unknown>[] = [
 
       return (
         <div className="flex items-center justify-center">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-xs font-semibold text-gray-700">
-            {initials}
-          </div>
+          <Avatar className="h-10 w-10 border border-gray-200 bg-gray-100">
+            {row.original.image ? (
+              <AvatarImage src={row.original.image} alt={name} />
+            ) : null}
+            <AvatarFallback className="bg-gray-100 text-xs font-semibold text-gray-700">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
         </div>
       );
     },

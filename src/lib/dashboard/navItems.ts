@@ -28,7 +28,7 @@ export const getCommonNaveItems = (role: userRole): NavSection[] => {
         },
         {
           title: "My Profile",
-          href: "/my-profile",
+          href: "/auth/me",
           icon: "User"
         }
       ]
