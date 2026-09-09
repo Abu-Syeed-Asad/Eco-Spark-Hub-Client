@@ -1,22 +1,25 @@
-import EcoAllUser from '@/components/module/All-User/EcoAllUser';
+"use client"
+
+import BasicTanstackTable from '@/components/tanstackTable/BasicTanstackTable';
+import { columns, type UserData } from '@/components/tanstackTable/tanstackTableData';
+import { getDashboardAllUser } from '@/service/dashboard/allUser';
+import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 
 const AllUsr = () => {
-  const data = [
-  {
-    id: 1,
-    name: "Asad",
-    email: "asad@gmail.com",
-  },
-  {
-    id: 2,
-    name: "John",
-    email: "john@gmail.com",
-  },
-];
+    const { data, isLoading } = useQuery<UserData[]>({
+    queryKey: ["dashboard-all-user"],
+    queryFn: () => getDashboardAllUser<UserData[]>()
+  });
+
   return (
     <div>
-       <EcoAllUser/>
+      <BasicTanstackTable
+        data={data ?? []}
+        columns={columns}
+        isLoading={isLoading}
+        emptyMessage="No users found."
+      />
     </div>
   );
 };

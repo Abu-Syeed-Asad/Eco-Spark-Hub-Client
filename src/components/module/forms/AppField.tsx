@@ -56,6 +56,7 @@ const AppField = ({ labelName, field, append, prepend, placeholder, type, disabl
           aria-describedby={hasError ? `${field.name}-error` : undefined}
           className={
             cn(
+              className,
               prepend && "pl-10",
               append && "pr-10",
               hasError && "border-destructive focus-visible:ring-destructive/20"
