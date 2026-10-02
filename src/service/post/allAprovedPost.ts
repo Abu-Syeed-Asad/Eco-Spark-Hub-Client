@@ -42,7 +42,9 @@ export const getPostById = async (id: string): Promise<Post> => {
 
 export const getMyPosts = async (): Promise<Post[]> => {
   const response = await http.httpget<Post[]>("/post/my-post");
+  console.log(response.data ,"flr")
   return response.data;
+
 };
 
 export const getPostCategories = async (): Promise<PostCategory[]> => {
@@ -68,5 +70,5 @@ export const updatePostStatus = async (
 };
 
 export const deletePost = async (id: string): Promise<void> => {
-  await http.httpDelete(`/post/${id}`);
+  await http.httpDelete(`/post/delete/${id}`);
 };

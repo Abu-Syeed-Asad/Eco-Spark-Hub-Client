@@ -210,6 +210,17 @@ function EditPostDialog({
                   id="edit-post-type"
                   name="postType"
                   defaultValue={post.postType}
+                  onChange={(event) => {
+                    const amountInput = event.currentTarget.form?.elements.namedItem(
+                      "taka"
+                    ) as HTMLInputElement | null;
+                    if (amountInput && event.target.value !== "PAID") {
+                      amountInput.value = "0";
+                      amountInput.disabled = true;
+                    } else if (amountInput) {
+                      amountInput.disabled = false;
+                    }
+                  }}
                   className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                 >
                   <option value="FREE">Free</option>
@@ -227,6 +238,7 @@ function EditPostDialog({
                   min="0"
                   step="1"
                   defaultValue={post.taka ?? 0}
+                  disabled={post.postType !== "PAID"}
                 />
               </div>
 

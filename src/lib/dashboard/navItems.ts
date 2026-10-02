@@ -14,25 +14,25 @@ export interface NavItems {
 export const getCommonNaveItems = (role: userRole): NavSection[] => {
   const defaultDashboard = getDefaultDashboardRoute(role);
   return [
-    // {
-    //   items: [
-    //     {
-    //       title: "Home",
-    //       href: "/",
-    //       icon: "Home"
-    //     },
-    //     {
-    //       title: "Dashboard",
-    //       href: defaultDashboard,
-    //       icon: "LayoutDashboard",
-    //     },
+    {
+      items: [
+        {
+          title: "Home",
+          href: "/",
+          icon: "Home"
+        },
+        {
+          title: "Dashboard",
+          href: defaultDashboard,
+          icon: "LayoutDashboard",
+        },
     //     {
     //       title: "My Profile",
     //       href: "/auth/me",
     //       icon: "User"
     //     }
-    //   ]
-    // },
+      ]
+    },
     // {
     //   title: "Setting",
     //   items: [

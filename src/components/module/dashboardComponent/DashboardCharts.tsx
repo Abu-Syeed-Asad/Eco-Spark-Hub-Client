@@ -59,6 +59,10 @@ const toSafeNumber = (value: unknown): number => {
   return Number.isFinite(numberValue) && numberValue >= 0 ? numberValue : 0;
 };
 
+const toCount = (value: unknown): number => {
+  return Array.isArray(value) ? value.length : toSafeNumber(value);
+};
+
 /**
  * Converts either dashboard API response into the shared format required by Recharts.
  * A zero-filled data set is returned while data is unavailable or incomplete.
@@ -80,14 +84,28 @@ export function transformDashboardData(
     ];
   }
 
+  const userResponse =
+    data && !("adminDashboardPost" in data) ? data : undefined;
   const dashboard =
-    data && "userDashboardPost" in data ? data.userDashboardPost : undefined;
+    userResponse?.UserDashBoardPost ?? userResponse?.userDashboardPost;
 
   return [
-    { name: "Approved Posts", value: toSafeNumber(dashboard?.approvedPost) },
-    { name: "Drafted Posts", value: toSafeNumber(dashboard?.draftedPost) },
-    { name: "Free Posts", value: toSafeNumber(dashboard?.freePost) },
-    { name: "Paid Posts", value: toSafeNumber(dashboard?.paidPost) },
+    {
+      name: "Approved Posts",
+      value: toCount(dashboard?.countApprovedPost ?? dashboard?.approvedPost ?? dashboard?.ApprovedPost),
+    },
+    {
+      name: "Drafted Posts",
+      value: toCount(dashboard?.countDraftedPost ?? dashboard?.draftedPost ?? dashboard?.DraftedPost),
+    },
+    {
+      name: "Free Posts",
+      value: toCount(dashboard?.countfreePost ?? dashboard?.freePost),
+    },
+    {
+      name: "Paid Posts",
+      value: toCount(dashboard?.countPaidPost ?? dashboard?.paidPost),
+    },
     { name: "Total Posts", value: toSafeNumber(dashboard?.totalPost) },
   ];
 }

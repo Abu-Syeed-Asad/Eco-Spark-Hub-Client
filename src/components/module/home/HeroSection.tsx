@@ -34,6 +34,7 @@ export default function HeroSection() {
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Button
               size="lg"
+              nativeButton={false}
               className="h-12 rounded-lg bg-[#1f5b3c] px-6 text-white shadow-md shadow-emerald-950/10 hover:bg-[#174a30]"
               render={<Link href="/auth/register" />}
             >
@@ -43,6 +44,7 @@ export default function HeroSection() {
             <Button
               size="lg"
               variant="outline"
+              nativeButton={false}
               className="h-12 rounded-lg border-[#c9d7c5] bg-white/70 px-6 text-[#244633] hover:bg-white"
               render={<Link href="/about" />}
             >

@@ -90,7 +90,7 @@ const AllPaymentPage = () => {
     queryKey: ['dashboard-all-payment'],
     queryFn: allPayment,
   });
-
+  console.log(data)
   return (
     <div className="space-y-4 p-6">
       <div className="flex items-center justify-between">

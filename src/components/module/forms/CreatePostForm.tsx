@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { LoaderCircle, Sprout } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -125,6 +126,7 @@ const compressImageFile = async (file: File) => {
 };
 
 export default function CreatePostForm({ userId }: { userId: string }) {
+  const router = useRouter();
   const queryClient = useQueryClient();
   const imageInputRef = useRef<HTMLInputElement>(null);
   const form = useForm<FormData>({
@@ -154,7 +156,12 @@ export default function CreatePostForm({ userId }: { userId: string }) {
       if (imageInputRef.current) {
         imageInputRef.current.value = "";
       }
-      await queryClient.invalidateQueries({ queryKey: ["dashboard-all-posts"] });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["dashboard-all-posts"] }),
+        queryClient.invalidateQueries({ queryKey: ["my-posts"] }),
+        queryClient.invalidateQueries({ queryKey: ["dasboard-data"] }),
+      ]);
+      router.push("/dashboard/user/my-post");
     },
     onError: (error: Error) => {
       toast.error("Could not create post", {
@@ -169,7 +176,7 @@ export default function CreatePostForm({ userId }: { userId: string }) {
       description: values.description,
       photo: values.photo,
       postType: values.postType,
-      taka: Number(values.taka),
+      taka: values.postType === "PAID" ? Number(values.taka) : 0,
       categoryId: values.categoryId,
       userId,
     };
@@ -302,7 +309,13 @@ export default function CreatePostForm({ userId }: { userId: string }) {
                     <FormControl>
                       <Select
                         value={field.value}
-                        onValueChange={(value) => field.onChange(value as PostType)}
+                        onValueChange={(value) => {
+                          const postType = value as PostType;
+                          field.onChange(postType);
+                          if (postType !== "PAID") {
+                            form.setValue("taka", 0, { shouldValidate: true });
+                          }
+                        }}
                       >
                         <SelectTrigger id="post-type" aria-invalid={fieldState.invalid}>
                           <SelectValue placeholder="Select a type" />
@@ -333,6 +346,7 @@ export default function CreatePostForm({ userId }: { userId: string }) {
                         type="number"
                         min="0"
                         step="any"
+                        disabled={form.watch("postType") !== "PAID"}
                         aria-invalid={fieldState.invalid}
                         value={field.value}
                         onBlur={field.onBlur}

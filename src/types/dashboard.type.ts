@@ -26,12 +26,24 @@ export interface AdminDashboardResponse {
   };
 }
 
+export interface UserDashboardPostData {
+  totalPost?: number;
+  allposts?: DashboardPost[];
+  countApprovedPost?: number;
+  approvedPost?: number | DashboardPost[];
+  ApprovedPost?: number | DashboardPost[];
+  countRejectedPost?: number;
+  RejectPost?: DashboardPost[];
+  countDraftedPost?: number;
+  draftedPost?: number | DashboardPost[];
+  DraftedPost?: number | DashboardPost[];
+  countPaidPost?: number;
+  paidPost?: number | DashboardPost[];
+  countfreePost?: number;
+  freePost?: number | DashboardPost[];
+}
+
 export interface UserDashboardResponse {
-  userDashboardPost: {
-    approvedPost: number;
-    draftedPost: number;
-    freePost: number;
-    paidPost: number;
-    totalPost: number;
-  };
+  UserDashBoardPost?: UserDashboardPostData;
+  userDashboardPost?: UserDashboardPostData;
 }
