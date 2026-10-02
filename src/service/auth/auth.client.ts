@@ -7,6 +7,11 @@ export interface IUserUpdatePayload {
   image?: string | null;
 }
 
+export interface IChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+
 export interface PaymentMeta {
   page: number;
   limit: number;
@@ -60,6 +65,16 @@ export async function updateUserProfile(payload: IUserUpdatePayload) {
     return res.data;
   } catch (error) {
     console.error("Error updating user info:", error);
+    throw error;
+  }
+}
+export async function changePassword(payload: IChangePasswordPayload) {
+  try {
+    const res = await http.httpUpdate<IUser>("/auth/change-password", payload);
+
+    return res.data;
+  } catch (error) {
+    console.error("Error changing password:", error);
     throw error;
   }
 }

@@ -19,7 +19,7 @@ export type RouteConfig = {
 };
 export const commonProtectedRoute: RouteConfig = {
   exact: ["/auth/me", "/auth/change-password"],
-  pattern: [],
+  pattern: [/^\/posts\/[^/]+$/],
 };
 export const userProtectedRoute: RouteConfig = {
   pattern: [/^\/dashboard\/user(\/.*)?$/],

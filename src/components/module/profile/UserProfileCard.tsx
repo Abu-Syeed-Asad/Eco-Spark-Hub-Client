@@ -39,6 +39,12 @@ const formatDate = (value: string) =>
     dateStyle: "medium",
   }).format(new Date(value))
 
+const formatPhone = (value: string | null) => {
+  if (!value) return "Not provided"
+
+  return value
+}
+
 export default function UserProfileCard({ user }: { user: IUser }) {
   const initials = getInitials(user.name || "User")
 
@@ -47,14 +53,14 @@ export default function UserProfileCard({ user }: { user: IUser }) {
       <CardHeader className="pb-4">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-            <Avatar size="lg" className="h-20 w-20 border-4 border-background shadow-lg">
+            <Avatar size="lg" className="h-16 w-16 border-4 border-background shadow-lg sm:h-20 sm:w-20">
               {user.image ? <AvatarImage src={user.image} alt={user.name} /> : null}
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
 
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2">
-                <CardTitle className="text-2xl font-semibold tracking-tight">
+                <CardTitle className="text-xl font-semibold tracking-tight sm:text-2xl">
                   {user.name}
                 </CardTitle>
                 <Badge
@@ -75,8 +81,8 @@ export default function UserProfileCard({ user }: { user: IUser }) {
                 </Badge>
               </div>
 
-              <CardDescription className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Mail className="h-4 w-4" />
+              <CardDescription className="flex items-center gap-2 break-all text-sm text-muted-foreground">
+                <Mail className="h-4 w-4 shrink-0" />
                 {user.email}
               </CardDescription>
 
@@ -95,10 +101,10 @@ export default function UserProfileCard({ user }: { user: IUser }) {
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
             <EditProfileDialog user={user} />
-            <Link href="/auth/change-password">
-              <Button variant="outline" size="sm">
+            <Link href="/auth/change-password" className="w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
                 <LockKeyhole className="h-4 w-4" />
                 Change password
               </Button>
@@ -108,7 +114,7 @@ export default function UserProfileCard({ user }: { user: IUser }) {
         </div>
       </CardHeader>
 
-      <CardContent className="grid gap-4 border-t bg-muted/20 p-4 md:grid-cols-3">
+      <CardContent className="grid gap-4 border-t bg-muted/20 p-4 sm:grid-cols-2 xl:grid-cols-2">
         <div className="rounded-xl border bg-background p-4 shadow-sm">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <WalletCards className="h-4 w-4 text-primary" />
@@ -125,6 +131,16 @@ export default function UserProfileCard({ user }: { user: IUser }) {
             Joined
           </div>
           <div className="mt-3 text-lg font-semibold">{formatDate(user.createdAt)}</div>
+        </div>
+
+        <div className="rounded-xl border bg-background p-4 shadow-sm">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CheckCircle2 className="h-4 w-4 text-primary" />
+            Phone
+          </div>
+          <div className="mt-3 text-lg font-semibold">
+            {formatPhone(user.phone)}
+          </div>
         </div>
 
         <div className="rounded-xl border bg-background p-4 shadow-sm">

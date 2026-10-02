@@ -30,18 +30,60 @@ const tableFeaturesConfig = tableFeatures({
   filteredRowModel: createFilteredRowModel(),
 });
 
+const getValueByPath = (record: Record<string, any>, path: string) => {
+  if (!path) {
+    return undefined;
+  }
+
+  return path.split(".").reduce<any>((acc, key) => {
+    if (acc === null || acc === undefined) {
+      return undefined;
+    }
+
+    return acc[key];
+  }, record);
+};
+
+const collectSearchableValues = (value: unknown): string[] => {
+  if (value === null || value === undefined) {
+    return [];
+  }
+
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return [String(value)];
+  }
+
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => collectSearchableValues(item));
+  }
+
+  if (typeof value === "object") {
+    return Object.values(value).flatMap((item) => collectSearchableValues(item));
+  }
+
+  return [];
+};
+
 const BasicTanstackTable = <TData extends object>({
   data,
   columns,
   isLoading = false,
   emptyMessage = "No records found.",
   showRoleFilter = true,
+  showCategoryFilter = false,
+  showTypeFilter = false,
+  categoryFilterPath = "category.title",
+  typeFilterPath = "type",
 }: {
   data: TData[];
   columns: any[];
   isLoading?: boolean;
   emptyMessage?: string;
   showRoleFilter?: boolean;
+  showCategoryFilter?: boolean;
+  showTypeFilter?: boolean;
+  categoryFilterPath?: string;
+  typeFilterPath?: string;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -51,6 +93,8 @@ const BasicTanstackTable = <TData extends object>({
 
   const selectedRole = searchParams.get("role") ?? "";
   const selectedStatus = searchParams.get("status") ?? "";
+  const selectedCategory = searchParams.get("category") ?? "";
+  const selectedType = searchParams.get("type") ?? "";
   const globalFilter = searchParams.get("search") ?? "";
 
   const updatePageInUrl = (page: number) => {
@@ -65,12 +109,6 @@ const BasicTanstackTable = <TData extends object>({
     const queryString = params.toString();
 
     router.push(queryString ? `${pathname}?${queryString}` : pathname, {
-      scroll: false,
-    });
-  };
-
-  const clearAllFilters = () => {
-    router.push(pathname, {
       scroll: false,
     });
   };
@@ -106,13 +144,38 @@ const BasicTanstackTable = <TData extends object>({
     [users]
   );
 
-  const uniqueStatuses = useMemo(
-    () =>
-      Array.from(new Set(users.map((user) => (user as any).status))).sort((a, b) =>
-        String(a).localeCompare(String(b))
-      ),
-    [users]
-  );
+
+  const uniqueCategories = useMemo(() => {
+    if (!showCategoryFilter) {
+      return [];
+    }
+
+    return Array.from(
+      new Set(
+        users
+          .map((user) => getValueByPath(user as Record<string, any>, categoryFilterPath))
+          .filter((value): value is string => value !== null && value !== undefined && value !== "")
+      )
+    )
+      .map((value) => String(value))
+      .sort((a, b) => a.localeCompare(b));
+  }, [categoryFilterPath, showCategoryFilter, users]);
+
+  const uniqueTypes = useMemo(() => {
+    if (!showTypeFilter) {
+      return [];
+    }
+
+    return Array.from(
+      new Set(
+        users
+          .map((user) => getValueByPath(user as Record<string, any>, typeFilterPath))
+          .filter((value): value is string => value !== null && value !== undefined && value !== "")
+      )
+    )
+      .map((value) => String(value))
+      .sort((a, b) => a.localeCompare(b));
+  }, [showTypeFilter, typeFilterPath, users]);
 
   const filteredUsers = useMemo(() => {
     let result = users;
@@ -125,18 +188,31 @@ const BasicTanstackTable = <TData extends object>({
       result = result.filter((user) => (user as any).status === selectedStatus);
     }
 
+    if (selectedCategory) {
+      result = result.filter(
+        (user) =>
+          String(getValueByPath(user as Record<string, any>, categoryFilterPath) ?? "") ===
+          selectedCategory
+      );
+    }
+
+    if (selectedType) {
+      result = result.filter(
+        (user) =>
+          String(getValueByPath(user as Record<string, any>, typeFilterPath) ?? "") === selectedType
+      );
+    }
+
     if (globalFilter) {
       const query = globalFilter.toLowerCase();
 
       result = result.filter((user) =>
-        Object.values(user).some((value) =>
-          String(value).toLowerCase().includes(query)
-        )
+        collectSearchableValues(user).some((value) => value.toLowerCase().includes(query))
       );
     }
 
     return result;
-  }, [selectedRole, selectedStatus, globalFilter, users]);
+  }, [selectedCategory, selectedRole, selectedStatus, selectedType, categoryFilterPath, globalFilter, typeFilterPath, users]);
 
   const pageCount = Math.max(
     Math.ceil(filteredUsers.length / pagination.pageSize),
@@ -244,8 +320,7 @@ const BasicTanstackTable = <TData extends object>({
   })();
 
   return (
-   
-<div>
+    <div className="w-full overflow-hidden">
       {/* Table Card */}
       <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {/* Table Header */}
@@ -270,13 +345,13 @@ const BasicTanstackTable = <TData extends object>({
                   htmlFor="search-users"
                   className="mb-2 block text-sm font-medium text-gray-700"
                 >
-                  Search users
+                  Search
                 </label>
 
                 <input
                   id="search-users"
                   type="text"
-                  placeholder="Search users..."
+                  placeholder="Search records..."
                   value={globalFilter}
                   onChange={(event) => {
                     const value = event.target.value;
@@ -300,10 +375,10 @@ const BasicTanstackTable = <TData extends object>({
                 />
               </div>
 
-              <div className="flex w-full flex-col gap-4 md:max-w-xl">
+              <div className="flex w-full flex-col gap-4 md:max-w-3xl">
                 <div className="flex w-full flex-col gap-4 md:flex-row md:items-end">
                   {showRoleFilter ? (
-                    <div className="w-full md:w-1/2">
+                    <div className="w-full md:w-1/3">
                       <label
                         htmlFor="role-filter"
                         className="mb-2 block text-sm font-medium text-gray-700"
@@ -345,26 +420,26 @@ const BasicTanstackTable = <TData extends object>({
                     </div>
                   ) : null}
 
-                  <div className={showRoleFilter ? "w-full md:w-1/2" : "w-full"}>
-                    <label
-                      htmlFor="status-filter"
-                      className="mb-2 block text-sm font-medium text-gray-700"
-                    >
-                      Filter by status
-                    </label>
+                  {showCategoryFilter ? (
+                    <div className="w-full md:w-1/3">
+                      <label
+                        htmlFor="category-filter"
+                        className="mb-2 block text-sm font-medium text-gray-700"
+                      >
+                        Filter by category
+                      </label>
 
-                    <div className="flex items-center gap-3">
                       <select
-                        id="status-filter"
-                        value={selectedStatus}
+                        id="category-filter"
+                        value={selectedCategory}
                         onChange={(event) => {
                           const value = event.target.value;
                           const params = new URLSearchParams(searchParams.toString());
 
                           if (value) {
-                            params.set("status", value);
+                            params.set("category", value);
                           } else {
-                            params.delete("status");
+                            params.delete("category");
                           }
 
                           params.delete("page");
@@ -377,23 +452,62 @@ const BasicTanstackTable = <TData extends object>({
                         }}
                         className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                       >
-                        <option value="">All statuses</option>
+                        <option value="">All categories</option>
 
-                        {uniqueStatuses.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
+                        {uniqueCategories.map((category) => (
+                          <option key={category} value={category}>
+                            {category}
                           </option>
                         ))}
                       </select>
-
-                      <button
-                        type="button"
-                        onClick={clearAllFilters}
-                        className="rounded-xl border border-red-200 bg-red-50 px-3 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-100"
-                      >
-                        Cancel
-                      </button>
                     </div>
+                  ) : null}
+
+                  {showTypeFilter ? (
+                    <div className="w-full md:w-1/3">
+                      <label
+                        htmlFor="type-filter"
+                        className="mb-2 block text-sm font-medium text-gray-700"
+                      >
+                        Filter by type
+                      </label>
+
+                      <select
+                        id="type-filter"
+                        value={selectedType}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          const params = new URLSearchParams(searchParams.toString());
+
+                          if (value) {
+                            params.set("type", value);
+                          } else {
+                            params.delete("type");
+                          }
+
+                          params.delete("page");
+
+                          const queryString = params.toString();
+
+                          router.push(queryString ? `${pathname}?${queryString}` : pathname, {
+                            scroll: false,
+                          });
+                        }}
+                        className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-700 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                      >
+                        <option value="">All types</option>
+
+                        {uniqueTypes.map((type) => (
+                          <option key={type} value={type}>
+                            {type}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  ) : null}
+
+                  <div className={showRoleFilter || showCategoryFilter || showTypeFilter ? "w-full md:w-1/3" : "w-full"}>
+                    <div className="flex items-center gap-3" />
                   </div>
                 </div>
               </div>

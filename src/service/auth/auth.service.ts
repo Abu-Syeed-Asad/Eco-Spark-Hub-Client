@@ -48,22 +48,27 @@ export async function getUserInfo() {
       `session_token=${sessionToken}`,
     ];
 
-    const res = await fetch(`${BASE_API_URL}/auth/me`, {
-      method: "GET",
-      headers: {
-        Cookie: cookieParts.join("; "),
-      },
-    });
+    const candidateEndpoints = ["/auth/profile", "/auth/me", "/auth/user"];
 
-    if (!res.ok) {
-      console.error("Failed to fetch user info:", res.status, res.statusText);
+    for (const endpoint of candidateEndpoints) {
+      const res = await fetch(`${BASE_API_URL}${endpoint}`, {
+        method: "GET",
+        headers: {
+          Cookie: cookieParts.join("; "),
+        },
+      });
 
-      return null;
+      if (res.ok) {
+        const { data } = await res.json();
+        return data;
+      }
+
+      if (res.status !== 404) {
+        break;
+      }
     }
 
-    const { data } = await res.json();
-
-    return data;
+    return null;
   } catch (error) {
     console.error("Error fetching user info:", error);
     return null;

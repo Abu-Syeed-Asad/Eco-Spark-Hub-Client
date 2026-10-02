@@ -13,7 +13,7 @@ const AllUsr = () => {
   });
 
   return (
-    <div>
+    <div >
       <BasicTanstackTable
         data={data ?? []}
         columns={columns}

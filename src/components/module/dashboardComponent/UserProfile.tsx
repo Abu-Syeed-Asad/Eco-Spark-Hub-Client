@@ -3,7 +3,11 @@ import { IUser } from "@/types/auth.type";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
-const UserProfile: React.FC<{ userInfo: IUser }> = ({ userInfo }) => {
+const UserProfile: React.FC<{ userInfo: IUser | null }> = ({ userInfo }) => {
+  if (!userInfo) {
+    return null;
+  }
+
   const firstTwoLetters = userInfo.name.slice(0, 2).toUpperCase();
 
   return (

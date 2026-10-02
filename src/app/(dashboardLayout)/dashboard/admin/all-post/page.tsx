@@ -22,7 +22,7 @@ const AllPost = () => {
 
   return (
     <div className="p-4 sm:p-6">
-      <DraftedPostTable posts={data?.adminDashboardPost.allposts ?? []} />
+      <DraftedPostTable posts={data?.adminDashboardPost.DraftedPost ?? []} />
     </div>
   );
 };
