@@ -1,6 +1,6 @@
 export type PostType = "FREE" | "PAID" | "UNPAID";
 
-export type PostStatus = "DRAFT" | "APPROVED" | "REJECTED";
+export type PostStatus = "DRAFT" | "APPROVED" | "REJECTED" | "UNPAID";
 
 export type UserRole =
   | "ADMIN"
@@ -42,6 +42,7 @@ export interface Post {
   status: PostStatus;
   userId: string;
   categoryId: string;
+  paymentUrl?: string;
   createdAt: string;
   updatedAt: string;
 

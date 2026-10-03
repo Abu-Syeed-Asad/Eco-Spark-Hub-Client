@@ -55,8 +55,15 @@ export interface PaymentRecord {
 
 export interface PaymentListResponse {
   data: PaymentRecord[];
-  meta: PaymentMeta;
+  meta?: PaymentMeta;
 }
+
+type PaymentResponsePayload = PaymentListResponse | PaymentRecord[];
+
+const normalizePaymentResponse = (
+  payload: PaymentResponsePayload,
+): PaymentListResponse =>
+  Array.isArray(payload) ? { data: payload } : { ...payload, data: payload.data ?? [] };
 
 export async function updateUserProfile(payload: IUserUpdatePayload) {
   try {
@@ -81,9 +88,19 @@ export async function changePassword(payload: IChangePasswordPayload) {
 
 export async function allPayment(): Promise<PaymentListResponse> {
   try {
-    const res = await http.httpget<PaymentListResponse>("/all-payment");
+    const res = await http.httpget<PaymentResponsePayload>("/payment/all-payment");
 
-    return res.data;
+    return normalizePaymentResponse(res.data);
+  } catch (error) {
+    console.error("Error fetching payment data:", error);
+    throw error;
+  }
+}
+export async function MyPayment(): Promise<PaymentListResponse> {
+  try {
+    const res = await http.httpget<PaymentResponsePayload>("/payment/my-payment");
+
+    return normalizePaymentResponse(res.data);
   } catch (error) {
     console.error("Error fetching payment data:", error);
     throw error;

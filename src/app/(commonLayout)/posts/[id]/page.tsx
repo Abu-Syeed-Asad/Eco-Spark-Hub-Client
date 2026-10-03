@@ -6,9 +6,11 @@ import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  ArrowUpRight,
   CalendarDays,
   CircleDollarSign,
   FileText,
+  LockKeyhole,
   Tag,
   User,
 } from "lucide-react";
@@ -21,6 +23,7 @@ const statusStyles: Record<PostStatus, string> = {
   APPROVED: "border-emerald-200 bg-emerald-50 text-emerald-700",
   DRAFT: "border-amber-200 bg-amber-50 text-amber-700",
   REJECTED: "border-red-200 bg-red-50 text-red-700",
+  UNPAID: "border-orange-200 bg-orange-50 text-orange-700",
 };
 
 const postTypeStyles: Record<PostType, string> = {
@@ -96,7 +99,65 @@ export default function SpecificPost() {
       </section>
     );
   }
+  if (post?.paymentUrl) {
+    return (
+      <main className="relative isolate flex min-h-[70vh] items-center justify-center overflow-hidden px-4 py-12">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-emerald-100/70 via-background to-background dark:from-emerald-950/40"
+        />
+        <section
+          aria-labelledby="payment-card-title"
+          className="w-full max-w-lg overflow-hidden rounded-3xl border border-emerald-100 bg-white shadow-xl shadow-emerald-950/10 dark:border-slate-800 dark:bg-slate-900"
+        >
+          <div className="h-1.5 bg-linear-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+          <div className="p-7 text-center sm:p-10">
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700 ring-8 ring-emerald-50/60 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-950/40">
+              <CircleDollarSign className="size-8" aria-hidden="true" />
+            </div>
 
+            <p className="mt-7 text-xs font-bold uppercase tracking-[0.2em] text-emerald-700 dark:text-emerald-300">
+              Secure checkout
+            </p>
+            <h1
+              id="payment-card-title"
+              className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white"
+            >
+              Complete your payment
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
+              Continue to our secure payment partner to finish checkout
+              {post.title ? ` for “${post.title}”` : ""}.
+            </p>
+
+            <a
+              href={post.paymentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-emerald-700 px-6 py-3 text-sm font-semibold text-white shadow-md shadow-emerald-900/15 transition hover:bg-emerald-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+            >
+              <LockKeyhole className="size-4" aria-hidden="true" />
+              Pay securely
+              <ArrowUpRight className="size-4" aria-hidden="true" />
+            </a>
+
+            <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
+              <LockKeyhole className="size-3.5" aria-hidden="true" />
+              Your payment is handled securely by Stripe.
+            </p>
+
+            <Link
+              href="/"
+              className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-slate-500 transition hover:text-emerald-700 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-700 dark:text-slate-400 dark:hover:text-emerald-300"
+            >
+              <ArrowLeft className="size-4" aria-hidden="true" />
+              Back to posts
+            </Link>
+          </div>
+        </section>
+      </main>
+    );
+  }
   return (
     <article className="mx-auto max-w-4xl">
       <Link

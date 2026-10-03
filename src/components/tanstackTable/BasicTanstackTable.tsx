@@ -72,6 +72,8 @@ const BasicTanstackTable = <TData extends object>({
   showRoleFilter = true,
   showCategoryFilter = false,
   showTypeFilter = false,
+  tableTitle = "Users",
+  recordLabel = "users",
   categoryFilterPath = "category.title",
   typeFilterPath = "type",
 }: {
@@ -82,6 +84,8 @@ const BasicTanstackTable = <TData extends object>({
   showRoleFilter?: boolean;
   showCategoryFilter?: boolean;
   showTypeFilter?: boolean;
+  tableTitle?: string;
+  recordLabel?: string;
   categoryFilterPath?: string;
   typeFilterPath?: string;
 }) => {
@@ -327,11 +331,11 @@ const BasicTanstackTable = <TData extends object>({
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div>
             <h2 className="text-lg font-semibold text-gray-900">
-              Users
+              {tableTitle}
             </h2>
 
             <p className="text-sm text-gray-500">
-              {filteredRowCount} users match current filters
+              {filteredRowCount} {recordLabel} match current filters
             </p>
           </div>
         </div>
@@ -585,7 +589,7 @@ const BasicTanstackTable = <TData extends object>({
         <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4">
           <div className="flex flex-col gap-1 text-sm text-gray-500 sm:flex-row sm:items-center sm:gap-2">
             <span>
-              Showing <span className="font-medium text-gray-900">{visibleRowCount}</span> of <span className="font-medium text-gray-900">{filteredRowCount}</span> users
+              Showing <span className="font-medium text-gray-900">{visibleRowCount}</span> of <span className="font-medium text-gray-900">{filteredRowCount}</span> {recordLabel}
             </span>
             <span className="inline-flex items-center rounded-full border border-blue-100 bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
               Page {currentPage} of {totalPages}
