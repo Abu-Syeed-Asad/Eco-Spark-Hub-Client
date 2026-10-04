@@ -1,5 +1,5 @@
 import { http } from "@/lib/axios/axios_instance";
-import type { IUser } from "@/types/auth.type";
+import type { IAdminUserUpdatePayload, IUser } from "@/types/auth.type";
 
 export interface IUserUpdatePayload {
   name?: string;
@@ -96,6 +96,29 @@ export async function allPayment(): Promise<PaymentListResponse> {
     throw error;
   }
 }
+
+export async function updateUserByAdmin(
+  userId: string,
+  payload: IAdminUserUpdatePayload,
+): Promise<IUser> {
+  try {
+    const res = await http.httpUpdate<IUser>(`/auth/admin/users/${userId}`, payload);
+    return res.data;
+  } catch (error) {
+    console.error("Error updating user by admin:", error);
+    throw error;
+  }
+}
+
+export async function deleteUserByAdmin(userId: string): Promise<void> {
+  try {
+    await http.httpDelete(`/auth/admin/users/${userId}`);
+  } catch (error) {
+    console.error("Error deleting user by admin:", error);
+    throw error;
+  }
+}
+
 export async function MyPayment(): Promise<PaymentListResponse> {
   try {
     const res = await http.httpget<PaymentResponsePayload>("/payment/my-payment");

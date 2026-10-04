@@ -1,3 +1,11 @@
+export type ROLE = "ADMIN" | "USER" | "MODERATOR" | string;
+export type USER_STATUS =
+  | "ACTIVE"
+  | "INACTIVE"
+  | "BLOCKED"
+  | "DELETED"
+  | string;
+
 export interface AuthResponse {
   accessToken: string;
   refreshToken: string;
@@ -5,6 +13,7 @@ export interface AuthResponse {
   redirectUrl: boolean;
   user: IUser;
 }
+
 export interface IUser {
   id: string;
   name: string;
@@ -13,11 +22,20 @@ export interface IUser {
   image: string | null;
   createdAt: string;
   updatedAt: string;
-  role: "USER" | "ADMIN" | string;
-  status: "ACTIVE" | "DELETED" | "BLOCKED" | string;
+  role: ROLE;
+  status: USER_STATUS;
   phone: string | null;
   needPasswordChange: boolean;
   isDeleted: boolean;
   deletedAt: string | null;
   totalAmount: number;
+}
+
+export interface IAdminUserUpdatePayload {
+  name?: string;
+  email?: string;
+  phone?: string | null;
+  image?: string | null;
+  role?: ROLE;
+  status?: USER_STATUS;
 }

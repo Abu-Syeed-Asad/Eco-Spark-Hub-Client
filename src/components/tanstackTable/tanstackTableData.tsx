@@ -25,7 +25,7 @@ export type UserData = {
   id: string;
   name: string;
   email: string;
-  status: "Active" | "Inactive" | "ACTIVE" | "INACTIVE";
+  status: "ACTIVE" | "DELETE" | "BLOCK";
   phone: string | null;
   role: string;
   needPasswordChange: boolean;
@@ -182,15 +182,26 @@ export const columns: ColumnDef<any, UserData, unknown>[] = [
     },
     cell: ({ row }) => {
       const status = row.original.status;
-      const isActive = status === "Active" || status === "ACTIVE";
+      const normalizedStatus = String(status).toUpperCase();
+      const label =
+        normalizedStatus === "ACTIVE"
+          ? "Active"
+          : normalizedStatus === "DELETE"
+            ? "Deleted"
+            : "Blocked";
+      const isActive = normalizedStatus === "ACTIVE";
 
       return (
         <span
           className={
-            isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"
+            isActive
+              ? "font-medium text-green-600"
+              : normalizedStatus === "BLOCK"
+                ? "font-medium text-amber-600"
+                : "font-medium text-red-600"
           }
         >
-          {isActive ? "Active" : "Inactive"}
+          {label}
         </span>
       );
     },

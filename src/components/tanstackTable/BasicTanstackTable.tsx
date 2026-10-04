@@ -76,6 +76,7 @@ const BasicTanstackTable = <TData extends object>({
   recordLabel = "users",
   categoryFilterPath = "category.title",
   typeFilterPath = "type",
+  onAction,
 }: {
   data: TData[];
   columns: any[];
@@ -88,6 +89,7 @@ const BasicTanstackTable = <TData extends object>({
   recordLabel?: string;
   categoryFilterPath?: string;
   typeFilterPath?: string;
+  onAction?: (action: ActionType, record: TData) => void;
 }) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -231,6 +233,11 @@ const BasicTanstackTable = <TData extends object>({
   }, [filteredUsers, safePageIndex, pagination.pageSize]);
 
   const handleAction = (action: ActionType, user: any) => {
+    if (onAction) {
+      onAction(action, user as TData);
+      return;
+    }
+
     console.log(`${action} user:`, user);
   };
 
