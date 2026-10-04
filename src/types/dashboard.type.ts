@@ -1,6 +1,11 @@
 export type PostType = "FREE" | "PAID" | "UNPAID";
 
-export type PostStatus = "DRAFT" | "APPROVED" | "REJECTED" | "DELETED";
+export type PostStatus =
+  | "DRAFT"
+  | "APPROVED"
+  | "REJECTED"
+  | "UNPAID"
+  | "DELETED";
 
 export interface DashboardPost {
   id: string;

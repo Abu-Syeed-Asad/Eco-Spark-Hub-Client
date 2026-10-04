@@ -27,6 +27,8 @@ const statusStyles: Record<PostStatus, string> = {
     "bg-yellow-500 text-white hover:bg-yellow-500",
   REJECTED:
     "bg-red-600 text-white hover:bg-red-600",
+  UNPAID:
+    "bg-orange-500 text-white hover:bg-orange-500",
   DELETED:
     "bg-red-700 text-white hover:bg-red-700",
 };

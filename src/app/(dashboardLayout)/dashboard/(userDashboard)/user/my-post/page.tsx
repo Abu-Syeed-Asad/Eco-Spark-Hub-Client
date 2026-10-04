@@ -40,6 +40,8 @@ const statusClasses: Record<Post["status"], string> = {
   DRAFT: "border-amber-200 bg-amber-50 text-amber-800",
   APPROVED: "border-emerald-200 bg-emerald-50 text-emerald-800",
   REJECTED: "border-red-200 bg-red-50 text-red-800",
+  UNPAID: "border-violet-200 bg-violet-50 text-violet-800",
+  DELETED: "border-slate-200 bg-slate-100 text-slate-700",
 };
 
 const formatDate = (value?: string) => {
