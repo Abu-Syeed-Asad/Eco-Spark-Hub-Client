@@ -13,6 +13,11 @@ export type UpdatePostPayload = {
 /** Content fields a post owner is allowed to update. */
 export type UpdateOwnPostPayload = UpdatePostPayload;
 
+/** Content and workflow fields that an administrator may update. */
+export type UpdateAdminPostPayload = UpdatePostPayload & {
+  status: Extract<PostStatus, "DRAFT" | "APPROVED" | "REJECTED">;
+};
+
 export type CreatePostPayload = UpdatePostPayload & {
   userId: string;
 };
@@ -58,6 +63,14 @@ export const updatePost = async (
 ): Promise<Post> => {
   const response = await http.httpUpdate<Post>(`/post/update/${id}`, payload);
 
+  return response.data;
+};
+
+export const updatePostByAdmin = async (
+  id: string,
+  payload: UpdateAdminPostPayload,
+): Promise<Post> => {
+  const response = await http.httpUpdate<Post>(`/post/update/${id}`, payload);
   return response.data;
 };
 

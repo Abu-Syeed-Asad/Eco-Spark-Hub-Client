@@ -38,8 +38,8 @@ import { Loader2, MoreHorizontal, PencilLine, Trash2 } from "lucide-react";
 import {
   deletePost,
   getPostById,
-  type UpdatePostPayload,
-  updatePost,
+  type UpdateAdminPostPayload,
+  updatePostByAdmin,
 } from "@/service/post/allAprovedPost";
 import type { DashboardPost, PostStatus, PostType } from "@/types/dashboard.type";
 
@@ -65,6 +65,16 @@ const getPostStatus = (status?: string): PostStatus => {
     default:
       return "DRAFT";
   }
+};
+
+const getAdminEditableStatus = (
+  status?: string,
+): UpdateAdminPostPayload["status"] => {
+  const normalizedStatus = getPostStatus(status);
+
+  return normalizedStatus === "APPROVED" || normalizedStatus === "REJECTED"
+    ? normalizedStatus
+    : "DRAFT";
 };
 
 const getPostType = (postType?: string): PostType => {
@@ -103,7 +113,7 @@ type EditPostDialogProps = {
   postId: string | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (payload: UpdatePostPayload) => void;
+  onSubmit: (payload: UpdateAdminPostPayload) => void;
   isSubmitting: boolean;
 };
 
@@ -134,6 +144,7 @@ function EditPostDialog({
 
     const formData = new FormData(event.currentTarget);
     const postType = String(formData.get("postType")) as PostType;
+    const status = String(formData.get("status")) as UpdateAdminPostPayload["status"];
     const rawPrice = Number(formData.get("taka"));
 
     onSubmit({
@@ -143,6 +154,7 @@ function EditPostDialog({
       postType,
       taka: postType === "PAID" && Number.isFinite(rawPrice) ? rawPrice : 0,
       categoryId: post.categoryId,
+      status,
     });
   };
 
@@ -172,7 +184,7 @@ function EditPostDialog({
         ) : null}
 
         {post ? (
-          <form className="space-y-5" onSubmit={handleSubmit}>
+          <form key={post.id} className="space-y-5" onSubmit={handleSubmit}>
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2 sm:col-span-2">
                 <Label htmlFor="edit-post-title">Title</Label>
@@ -229,6 +241,20 @@ function EditPostDialog({
                   <option value="FREE">Free</option>
                   <option value="PAID">Paid</option>
                   <option value="UNPAID">Unpaid</option>
+                </select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-post-status">Post status</Label>
+                <select
+                  id="edit-post-status"
+                  name="status"
+                  defaultValue={getAdminEditableStatus(post.status)}
+                  className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                >
+                  <option value="DRAFT">Draft</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="REJECTED">Rejected</option>
                 </select>
               </div>
 
@@ -363,8 +389,8 @@ const AdminDashBoardAllPost = ({ posts }: DraftedPostTableProps) => {
   };
 
   const editMutation = useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: UpdatePostPayload }) =>
-      updatePost(id, payload),
+    mutationFn: ({ id, payload }: { id: string; payload: UpdateAdminPostPayload }) =>
+      updatePostByAdmin(id, payload),
     onSuccess: async (_updatedPost, variables) => {
       await refreshPostQueries(variables.id);
       toast.add({
