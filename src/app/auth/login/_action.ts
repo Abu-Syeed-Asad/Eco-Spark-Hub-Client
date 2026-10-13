@@ -38,7 +38,7 @@ export const loginUser = async (
 
   await cookieUtils.setCookie("access_token", data.accessToken);
   await cookieUtils.setCookie("refresh_token", data.refreshToken, 60 * 60 * 24 * 7);
-  await cookieUtils.setCookie("session_token", data.token);
+  await cookieUtils.setCookie("session_token", data.token, 60 * 60 * 24 * 7);
 
   const accesstokensecret: string = process.env.ACCESS_TOKEN_SECRET as string;
   const tokenverify = jwt.verify(data.accessToken, accesstokensecret) as JwtPayload;

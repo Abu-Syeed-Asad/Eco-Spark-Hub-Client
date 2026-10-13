@@ -29,9 +29,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { allCategory } from "@/service/category/categoryservice";
+import { allCategory, type PostCategory } from "@/service/category/categoryservice";
 import { createPost, type CreatePostPayload } from "@/service/post/allAprovedPost";
-import type { PostCategory, PostType } from "@/types/post";
+import type { PostType } from "@/types/post";
 
 const createPostSchema = z.object({
   title: z.string().trim().min(3, "Title must be at least 3 characters."),

@@ -1,7 +1,7 @@
 import React from 'react';
 import DashboardItems from './DashboardItems';
 import UserProfile from './UserProfile';
-import { IUser } from '@/types/auth.type';
+import { IUser } from '../../../types/auth.type';
 import { getNavItemsByRole } from '@/lib/dashboard/navItems';
 import { userRole } from '@/lib/auth/authUtils';
 

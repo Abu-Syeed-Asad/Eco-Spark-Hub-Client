@@ -12,16 +12,15 @@ import {
   getUserInfo,
 } from "./service/auth/auth.service";
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-const refreshTokenMiddleWare = async (refreshToken: string) => {
+const refreshTokenMiddleWare = async (
+  refreshToken: string,
+  sessionToken: string,
+) => {
   try {
-    const refresh = await getNewTokenWithRefreshToken(refreshToken);
-    if (!refresh) {
-      return false;
-    }
-    return true;
+    return await getNewTokenWithRefreshToken(refreshToken, sessionToken);
   } catch (error) {
     console.log(`Error refreshing token in proxy middleware `, error);
-    return false;
+    return null;
   }
 };
 
@@ -40,9 +39,11 @@ export const proxy = async (request: NextRequest) => {
     );
 
     const accessToken =
-      request.cookies.get("access_token")?.value || parsedCookies.accessToken;
+      request.cookies.get("access_token")?.value || parsedCookies.access_token;
     const refreshToken =
-      request.cookies.get("refresh_token")?.value || parsedCookies.refreshToken;
+      request.cookies.get("refresh_token")?.value || parsedCookies.refresh_token;
+    const requestSessionToken =
+      request.cookies.get("session_token")?.value || parsedCookies.session_token;
     const decodedAccessToken =
       accessToken &&
       jwtUtils.veryfyToken(accessToken, accessTokenSecret as string).data;
@@ -59,36 +60,74 @@ const routeOwner = getRouteOwner(pathName);
 
     const isAuth = isAuthRoute(pathName);
 
-    if (
-      isValidAccesstoken &&
-      refreshToken &&
-      tokenUtils.isTokenExpiringSoon(accessToken)
-    ) {
+    const shouldRefreshToken =
+      Boolean(refreshToken && requestSessionToken) &&
+      (!isValidAccesstoken ||
+        Boolean(
+          accessToken && tokenUtils.isTokenExpiringSoon(accessToken),
+        ));
+
+    if (shouldRefreshToken) {
       const requestHeaders = new Headers(request.headers);
-      const response = NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      });
 
       try {
-        const refreshed = await refreshTokenMiddleWare(refreshToken);
+        const refreshed = requestSessionToken
+          ? await refreshTokenMiddleWare(refreshToken, requestSessionToken)
+          : null;
         if (refreshed) {
           requestHeaders.set("x-token-refreshed", "1");
+          const forwardedCookies = new Map(
+            request.cookies
+              .getAll()
+              .map(({ name, value }) => [name, value]),
+          );
+          forwardedCookies.set("access_token", refreshed.access_token);
+          forwardedCookies.set("refresh_token", refreshed.refreshToken);
+          forwardedCookies.set("session_token", refreshed.session_token);
+          requestHeaders.set(
+            "cookie",
+            Array.from(
+              forwardedCookies,
+              ([name, value]) => `${name}=${value}`,
+            ).join("; "),
+          );
+
+          const refreshedResponse = NextResponse.next({
+            request: {
+              headers: requestHeaders,
+            },
+          });
+          const cookieOptions = {
+            httpOnly: true,
+            sameSite: "lax" as const,
+            secure: process.env.NODE_ENV === "production",
+            path: "/",
+          };
+          refreshedResponse.cookies.set("access_token", refreshed.access_token, {
+            ...cookieOptions,
+            maxAge: 60 * 60 * 24,
+          });
+          refreshedResponse.cookies.set("refresh_token", refreshed.refreshToken, {
+            ...cookieOptions,
+            maxAge: 60 * 60 * 24 * 7,
+          });
+          refreshedResponse.cookies.set("session_token", refreshed.session_token, {
+            ...cookieOptions,
+            maxAge: 60 * 60 * 24 * 7,
+          });
+          return refreshedResponse;
         }
-        return NextResponse.next({
-          request: {
-            headers: requestHeaders,
-          },
-          headers: response.headers,
-        });
       } catch (error) {
         console.error("Error refreshing token:", error);
       }
-      return response;
     }
     //  redirection
-    if (isAuth && isValidAccesstoken && User_Role) {
+    if (
+      isAuth &&
+      pathName !== "/auth/login" &&
+      isValidAccesstoken &&
+      User_Role
+    ) {
       return NextResponse.redirect(
         new URL(getDefaultDashboardRoute(User_Role), request.url),
       );

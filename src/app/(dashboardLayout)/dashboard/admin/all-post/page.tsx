@@ -4,8 +4,13 @@ import DraftedPostTable from '@/components/module/AllPost/AdminDashBoardAllPost'
 
 import { getDashboardAllpost } from '@/service/dashboard/allPost';
 import { useQuery } from '@tanstack/react-query';
-import type { AdminDashboardResponse } from '@/types/dashboard.type';
 import { AppLoader } from '@/components/ui/app-loader';
+
+type AdminDashboardResponse = {
+  adminDashboardPost: {
+    DraftedPost: Parameters<typeof DraftedPostTable>[0]['posts'];
+  };
+};
 
 const AllPost = () => {
   const { data, error, isLoading } = useQuery<AdminDashboardResponse>({

@@ -75,20 +75,30 @@ export const AdminNavItems: NavSection[] = [
       {
         title: "All-User",
         href: "/dashboard/admin/all-user",
-        icon: "UsersIcon"
+        icon: "UsersIcon",
       },
       {
         title: "All-Post",
         href: "/dashboard/admin/all-post",
-        icon: "SeeIcon"
+        icon: "SeeIcon",
       },
       {
         title: "All-Payment",
         href: "/dashboard/admin/all-payment",
-        icon: "CreditCardIcon"
+        icon: "CreditCardIcon",
       },
-    ]
-  }
+      {
+        title: "Create-Category",
+        href: "/dashboard/admin/create-category",
+        icon: "FolderPlus",
+      },
+      {
+        title: "All-Category",
+        href: "/dashboard/admin/all-category",
+        icon: "FolderTree",
+      },
+    ],
+  },
 ];
 
 export const getNavItemsByRole = (role: userRole): NavSection[] => {

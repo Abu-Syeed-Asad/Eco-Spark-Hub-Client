@@ -3,42 +3,46 @@ import { cookieUtils } from "@/lib/cookie/cookieUtils";
 import { cookies } from "next/headers";
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export const getNewTokenWithRefreshToken = async (refreshToken: string) => {
+export interface RefreshedAuthTokens {
+  access_token: string;
+  refreshToken: string;
+  session_token: string;
+}
+
+export const getNewTokenWithRefreshToken = async (
+  refreshToken: string,
+  sessionToken: string,
+): Promise<RefreshedAuthTokens | null> => {
   try {
-    const res = await fetch(`${BASE_API_URL}/auth/refresh-token`, {
+    const res = await fetch(`${BASE_API_URL}/auth/get-new-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Cookie: `refresh_token=${refreshToken}`,
+        Cookie: `refresh_token=${refreshToken}; session_token=${sessionToken}`,
       },
     });
     if (!res.ok) {
-      return false;
+      return null;
     }
-    const { data } = await res.json();
-    const { accessToken, refreshToken: newRefreshToken, token } = data;
-    if (accessToken) {
-      await cookieUtils.setCookie("access_token", accessToken);
-    }
-    if (newRefreshToken) {
-      await cookieUtils.setCookie("refresh_token", newRefreshToken);
-    }
-    if (token) {
-      await cookieUtils.setCookie("session_token", token, 24 * 60 * 60);
-    }
-    return true;
+    const { data }: { data: RefreshedAuthTokens } = await res.json();
+    return data;
   } catch (error) {
     console.error("Error refreshing token:", error);
-    return false;
+    return null;
   }
 };
 
-export async function getUserInfo() {
+export async function getUserInfo(tokens?: {
+  accessToken: string;
+  sessionToken: string;
+}) {
   try {
     const cookieStore = await cookies();
 
-    const accessToken = cookieStore.get("access_token")?.value;
-    const sessionToken = cookieStore.get("session_token")?.value;
+    const accessToken =
+      tokens?.accessToken ?? cookieStore.get("access_token")?.value;
+    const sessionToken =
+      tokens?.sessionToken ?? cookieStore.get("session_token")?.value;
     if (!accessToken || !sessionToken) {
       return null;
     }
