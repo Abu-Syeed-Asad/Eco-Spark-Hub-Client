@@ -1,11 +1,5 @@
-import React from 'react';
+import { AppLoader } from "@/components/ui/app-loader";
 
-const loading = () => {
-  return (
-    <div>
-      loading...
-    </div>
-  );
-};
-
-export default loading;
+export default function Loading() {
+  return <AppLoader label="Loading dashboard..." />;
+}

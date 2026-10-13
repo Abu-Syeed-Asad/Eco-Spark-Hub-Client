@@ -1,8 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import NotificationBell from "@/components/module/notification/NotificationBell";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { Fragment, useEffect, useState, useSyncExternalStore } from "react";
+import type { ReactNode } from "react";
 import {
   Info,
   LayoutDashboard,
@@ -26,6 +28,7 @@ import { IUser } from "@/types/auth.type";
 
 type SiteNavbarProps = {
   user?: IUser | null;
+  dashboardMenu?: ReactNode;
 };
 
 type NavigationItem = {
@@ -65,7 +68,10 @@ const subscribeToTheme = (onStoreChange: () => void) => {
   };
 };
 
-export default function SiteNavbar({ user = null }: SiteNavbarProps) {
+export default function SiteNavbar({
+  user = null,
+  dashboardMenu,
+}: SiteNavbarProps) {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const isDark = useSyncExternalStore(
@@ -110,7 +116,7 @@ export default function SiteNavbar({ user = null }: SiteNavbarProps) {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-emerald-950/10 bg-white/90 text-slate-900 shadow-sm backdrop-blur dark:border-emerald-50/10 dark:bg-slate-950/90 dark:text-slate-50">
+    <header className="sticky top-0 z-50 shrink-0 border-b border-emerald-950/10 bg-white/90 text-slate-900 shadow-sm backdrop-blur dark:border-emerald-50/10 dark:bg-slate-950/90 dark:text-slate-50">
       <div className="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
@@ -145,6 +151,7 @@ export default function SiteNavbar({ user = null }: SiteNavbarProps) {
         </nav>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
+          {user && <NotificationBell key={user.id} userId={user.id} userRole={user.role} />}
           <button
             type="button"
             onClick={toggleTheme}
@@ -177,16 +184,20 @@ export default function SiteNavbar({ user = null }: SiteNavbarProps) {
             {accountLink.label}
           </Link>
 
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen((open) => !open)}
-            className="grid size-10 place-items-center rounded-lg text-slate-700 transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-200 dark:hover:bg-slate-800 md:hidden"
-            aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-navigation"
-          >
-            {isMenuOpen ? <X className="size-5" aria-hidden="true" /> : <Menu className="size-5" aria-hidden="true" />}
-          </button>
+          <Fragment key="navigation-menu">
+          {dashboardMenu ?? (
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen((open) => !open)}
+              className="grid size-10 place-items-center rounded-lg text-slate-700 transition-colors hover:bg-emerald-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 dark:text-slate-200 dark:hover:bg-slate-800 md:hidden"
+              aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
+            >
+              {isMenuOpen ? <X className="size-5" aria-hidden="true" /> : <Menu className="size-5" aria-hidden="true" />}
+            </button>
+          )}
+          </Fragment>
         </div>
 
         {isMenuOpen && (

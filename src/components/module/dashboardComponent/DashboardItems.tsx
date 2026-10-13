@@ -20,13 +20,13 @@ type NavSection = {
 
 interface DashboardItemsProps {
   items: NavSection[];
+  onNavigate?: () => void;
 }
 
-const DashboardItems = ({ items }: DashboardItemsProps) => {
+const DashboardItems = ({ items, onNavigate }: DashboardItemsProps) => {
  return (
    <div>
-     {/* here are set static hight set for the user info statically set  */}
-      <div className="min-h-134 overflow-y-auto">
+      <div className="space-y-5">
         {items.map((section, index) => (
           <div key={index}>
             {section.title && (
@@ -43,6 +43,7 @@ const DashboardItems = ({ items }: DashboardItemsProps) => {
                   <Link
                     key={item.href}
                     href={item.href}
+                    onClick={onNavigate}
                     className="flex items-center gap-2 rounded-md px-3 py-2 hover:bg-accent"
                   >
                     <Icon className="h-4 w-4" />

@@ -16,7 +16,9 @@ import {
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import { getPostById } from "@/service/post/allAprovedPost";
+import { AppLoader } from "@/components/ui/app-loader";
+import { getPostDetails } from "@/service/post/post.actions";
+import CommentSection from "@/components/module/comment/CommentSection";
 import type { PostStatus, PostType } from "@/types/post";
 
 const statusStyles: Record<PostStatus, string> = {
@@ -60,23 +62,12 @@ export default function SpecificPost() {
   const postId = Array.isArray(params.id) ? params.id[0] : params.id;
   const { data: post, error, isError, isLoading } = useQuery({
     queryKey: ["specific-post", postId],
-    queryFn: () => getPostById(postId),
+    queryFn: () => getPostDetails(postId),
     enabled: Boolean(postId),
   });
 
   if (isLoading) {
-    return (
-      <div className="mx-auto max-w-4xl animate-pulse space-y-6">
-        <div className="h-5 w-28 rounded bg-slate-200 dark:bg-slate-800" />
-        <div className="aspect-[16/9] rounded-3xl bg-slate-200 dark:bg-slate-800" />
-        <div className="space-y-3 rounded-3xl bg-white p-8 dark:bg-slate-900">
-          <div className="h-5 w-40 rounded bg-slate-200 dark:bg-slate-800" />
-          <div className="h-10 w-3/4 rounded bg-slate-200 dark:bg-slate-800" />
-          <div className="h-5 w-full rounded bg-slate-200 dark:bg-slate-800" />
-          <div className="h-5 w-5/6 rounded bg-slate-200 dark:bg-slate-800" />
-        </div>
-      </div>
-    );
+    return <AppLoader label="Loading post..." />;
   }
 
   if (isError || !post) {
@@ -277,6 +268,9 @@ export default function SpecificPost() {
           </div>
         </div>
       </div>
+      {post.status === "APPROVED" && <div className="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <CommentSection postId={postId} defaultOpen />
+      </div>}
     </article>
   );
 }

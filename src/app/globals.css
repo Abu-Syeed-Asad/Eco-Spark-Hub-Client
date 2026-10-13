@@ -4,10 +4,36 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Delay the indicator so cached and very fast requests do not flash. */
+.global-loading {
+  opacity: 0;
+  animation: global-loading-appear 0s 180ms forwards;
+}
+
+.global-loading-bar {
+  animation: global-loading-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes global-loading-appear {
+  to { opacity: 1; }
+}
+
+@keyframes global-loading-progress {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(400%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-loading-bar {
+    animation: none;
+    width: 100%;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);

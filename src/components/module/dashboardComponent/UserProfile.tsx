@@ -11,7 +11,7 @@ const UserProfile: React.FC<{ userInfo: IUser | null }> = ({ userInfo }) => {
   const firstTwoLetters = userInfo.name.slice(0, 2).toUpperCase();
 
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 shrink-0 space-y-2">
       <Separator />
       
       <div className="px-4 py-4 space-y-3">

@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { allApprovedPost } from "@/service/post/allAprovedPost";
 import FeaturedPost from "./FeaturePost";
+import { AppLoader } from "@/components/ui/app-loader";
 
 
 export default function Post() {
@@ -22,13 +23,7 @@ export default function Post() {
   // LOADING
   // ================================
   if (isLoading) {
-    return (
-      <section className="w-full px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <div className="h-[400px] w-full animate-pulse rounded-3xl bg-muted" />
-        </div>
-      </section>
-    );
+    return <AppLoader label="Loading posts..." />;
   }
 
   // ================================
@@ -36,7 +31,7 @@ export default function Post() {
   // ================================
   if (isError) {
     return (
-      <section className="w-full px-4 py-8">
+      <section className="w-full px-2 py-8">
         <div className="mx-auto max-w-7xl rounded-2xl border border-destructive/30 bg-destructive/5 p-8 text-center">
           <h2 className="text-lg font-semibold text-destructive">
             Failed to load posts
@@ -57,7 +52,7 @@ export default function Post() {
   // ================================
   if (!data || data.length === 0) {
     return (
-      <section className="w-full px-4 py-8">
+      <section className="w-full px-2 py-8">
         <div className="mx-auto max-w-7xl rounded-2xl border p-10 text-center">
           <h2 className="text-xl font-semibold">
             No approved posts found
@@ -75,7 +70,7 @@ export default function Post() {
   // POSTS
   // ================================
   return (
-    <section className="w-full px-4 py-8 sm:px-6 lg:px-8">
+    <section className="w-full px-2 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         
         {/* Section heading */}

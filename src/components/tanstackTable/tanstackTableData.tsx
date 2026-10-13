@@ -153,8 +153,27 @@ export const columns: ColumnDef<any, UserData, unknown>[] = [
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
     enableSorting: true,
+    header: ({ column }) => {
+      const sorted = column.getIsSorted();
+
+      return (
+        <button
+          type="button"
+          onClick={() => column.toggleSorting(sorted === "asc")}
+          className="inline-flex items-center gap-2"
+        >
+          Created At
+          {sorted === "asc" ? (
+            <ArrowUp className="h-4 w-4" />
+          ) : sorted === "desc" ? (
+            <ArrowDown className="h-4 w-4" />
+          ) : (
+            <ArrowUpDown className="h-4 w-4" />
+          )}
+        </button>
+      );
+    },
     cell: ({ row }) => formatDateTime(row.original.createdAt),
   },
   {
@@ -222,7 +241,7 @@ export const columns: ColumnDef<any, UserData, unknown>[] = [
                 type="button"
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="relative h-8 w-8"
               >
                 <MoreHorizontal className="h-4 w-4" />
                 <span className="sr-only">Open actions</span>

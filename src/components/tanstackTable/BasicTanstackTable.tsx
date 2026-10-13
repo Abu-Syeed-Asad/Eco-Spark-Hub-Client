@@ -331,9 +331,9 @@ const BasicTanstackTable = <TData extends object>({
   })();
 
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full min-w-0 max-w-full">
       {/* Table Card */}
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="min-w-0 max-w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         {/* Table Header */}
         <div className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
           <div>
@@ -349,8 +349,8 @@ const BasicTanstackTable = <TData extends object>({
 
         {/* Responsive Table */}
         <div>
-          <div className="w-full overflow-x-auto">
-            <div className="grid gap-4 border-b border-gray-200 bg-gray-50 p-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]">
+          <div className="w-full">
+            <div className="grid gap-4 border-b border-gray-200 bg-gray-50 p-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
               <div className="w-full md:max-w-sm">
                 <label
                   htmlFor="search-users"
@@ -517,15 +517,12 @@ const BasicTanstackTable = <TData extends object>({
                     </div>
                   ) : null}
 
-                  <div className={showRoleFilter || showCategoryFilter || showTypeFilter ? "w-full md:w-1/3" : "w-full"}>
-                    <div className="flex items-center gap-3" />
-                  </div>
                 </div>
               </div>
             </div>
-            
- 
-          <table className="w-full min-w-175 border-collapse">
+
+            <div className="relative w-full min-w-0 max-w-full overflow-x-auto overscroll-x-contain">
+          <table className="w-full min-w-max border-collapse">
             {/* ================= HEADER ================= */}
             <thead className="bg-gray-50">
               {table.getHeaderGroups().map((headerGroup) => (
@@ -587,13 +584,14 @@ const BasicTanstackTable = <TData extends object>({
                   )}
             </tbody>
           </table>
+            </div>
           </div>
           
         </div>
    
 
         {/* ================= FOOTER ================= */}
-        <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 px-4 py-4 sm:px-6">
           <div className="flex flex-col gap-1 text-sm text-gray-500 sm:flex-row sm:items-center sm:gap-2">
             <span>
               Showing <span className="font-medium text-gray-900">{visibleRowCount}</span> of <span className="font-medium text-gray-900">{filteredRowCount}</span> {recordLabel}
@@ -603,7 +601,7 @@ const BasicTanstackTable = <TData extends object>({
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => updatePageInUrl(Math.max(currentPage - 1, 1))}

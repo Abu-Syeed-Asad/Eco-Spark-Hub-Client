@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Post } from "@/types/post";
 import { PostStatus, PostType } from "@/types/dashboard.type";
 import Image from "next/image";
+import CommentSection from "@/components/module/comment/CommentSection";
 
 
 
@@ -79,7 +80,6 @@ export default function FeaturedPost({
     createdAt,
     id,
   } = post;
- console.log(post,"fea")
   return (
     <article className="group w-full overflow-hidden rounded-2xl border bg-background shadow-sm transition-all duration-300 hover:shadow-xl">
       {/* =========================================
@@ -239,6 +239,7 @@ export default function FeaturedPost({
           </Button>
         </div>
       </div>
+      <CommentSection postId={id} initialCount={post._count?.comments ?? 0} />
     </article>
   );
 }
